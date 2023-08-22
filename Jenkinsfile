@@ -36,16 +36,13 @@ pipeline {
         }
       }
     }
-    stage('Push Docker Image') {
+    stage('Docker Image Build') {
       steps {
-        script {
-          sh 'rm -f ~/.dockercfg ~/.docker/config.json || true' 
-
-          docker.withRegistry("https://${ECR_REPOSITORY}", "ecr:${REGION}:${AWS_CREDENTIALS_NAME}") {
-            docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
-          }
+        dir("${env.WORKSPACE}") {
+          sh 'docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} .'
         }
       }
-    
+    }
+  
   }
 }
