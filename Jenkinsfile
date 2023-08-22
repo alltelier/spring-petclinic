@@ -43,62 +43,6 @@ pipeline {
         }
       }
     }
-    stage('Push Docker Image') {
-      steps {
-        script {
-          sh 'rm -f ~/.dockercfg ~/.docker/config.json || true' 
-
-          docker.withRegistry("https://${ECR_REPOSITORY}", "ecr:${REGION}:${AWS_CREDENTIALS_NAME}") {
-            docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
-          }
-        }
-      }
-    }
-    stage('Upload to S3') {
-      steps {
-        dir("${env.WORKSPACE}") {
-          sh 'zip -r deploy-1.0.zip ./scripts appspec.yml'
-          sh 'aws s3 cp --region ap-northeast-2 ./deploy-1.0.zip s3://project04-terraform-state'
-          sh 'rm -rf ./deploy-1.0.zip'
-        }
-      }
-    }
-
-    stage('CodeDeploy Application') {
-      steps {
-        script {    
-          sh 'aws deploy delete-application --application-name "${APPLICATION_NAME}"'
-          sh 'aws deploy create-application --application-name "${APPLICATION_NAME}" --compute-platform Server'
-          }
-       }
-     }
-
-    stage('CodeDeploy Deployment Group') {
-      steps {
-        script {    
-          sh 'aws deploy create-deployment-group --application-name "${APPLICATION_NAME}" \
-          --deployment-group-name "${DEPLOYMENT_GROUP_NAME}" \
-          --auto-scaling-groups "${AUTO_SCALING_GROUP_NAME}" \
-          --service-role-arn "${SERVICE_ROLE_ARN}" \
-          --deployment-config-name "${DEPLOYMENT_CONFIG_NAME}"'
-          }
-       }
-     }
-    
-    stage('Deploy to CodeDeploy') {
-      steps {
-        script {
-          sh 'aws deploy create-deployment \
-             --application-name "${APPLICATION_NAME}" \
-             --s3-location bucket=project04-terraform-state,bundleType=zip,key=deploy-1.0 \
-             --deployment-group-name "${DEPLOYMENT_GROUP_NAME}" \
-             --deployment-config-name "${DEPLOYMENT_CONFIG_NAME}" \
-             --target-instances autoScalingGroups="${AUTO_SCALING_GROUP_NAME}"'
-        }
-      }
-    }
-
-
     
   }
 }
