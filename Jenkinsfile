@@ -63,7 +63,14 @@ pipeline {
         }
       }
     }
-    
+    stage('CodeDeploy Application') {
+      steps {
+        script {    
+          sh 'aws deploy delete-application --application-name "${APPLICATION_NAME}"'
+          sh 'aws deploy create-application --application-name "${APPLICATION_NAME}" --compute-platform Server'
+          }
+       }
+     }
   
   }
 }
