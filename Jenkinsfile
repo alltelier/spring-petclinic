@@ -23,7 +23,7 @@ pipeline {
   stages {
     stage('Git Clone') {
       steps {
-        git url: 'https://github.com/yellowpenguincookie/spring-petclinic.git', branch: 'efficient-webjars', credentialsId: 'gitCredentials'
+        git url: 'https://github.com/alltelier/spring-petclinic.git', branch: 'efficient-webjars-1', credentialsId: 'gitCredentials'
       }
     }
     stage('mvn build') {
