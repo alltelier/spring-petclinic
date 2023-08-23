@@ -90,7 +90,6 @@ pipeline {
              --s3-location bucket=project04-terraform-state,bundleType=zip,key=deploy-1.0.zip \
              --deployment-group-name "${DEPLOYMENT_GROUP_NAME}" \
              --deployment-config-name "${DEPLOYMENT_CONFIG_NAME}" \
-             --target-instances autoScalingGroups="${AUTO_SCALING_GROUP_NAME}"'
         }
       }
     }
